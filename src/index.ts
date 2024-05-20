@@ -1,16 +1,29 @@
-import express,{Application,Request,Response} from 'express';
-const app:Application= express();
-import { productrouter } from './routes/productroutes';
-import { cartrouter } from './routes/cartroutes';
-import { paymentrouter } from './routes/paymentroutes';
+import express, { Express } from 'express';
+// import connectDB from './src/config/db.js';
+// import updatePaymentDateMiddleware from './src/middlewares/paymentMiddleware.js'
+const app: Express = express();
+import { AppDataSource } from './config/data';
+import productRoutes from './routes/productroutes';
+import cartRoutes from './routes/cartroutes';
+app.use(express.json());
 
-const PORT:Number=3000;
+
+// //MongoDb connection
+// connectDB();
+// // Routes
+app.use('/products', productRoutes);
+app.use('/carts', cartRoutes);
+// app.use('/payments', paymentRoutes);
+AppDataSource.initialize()
+    .then(() => {
+        // here you can start to work with your database
+        console.log('Mongo Database connection Sucess');
+        // console.log('MongoDB connection properties:', AppDataSource);
+    })
+    .catch((error) => console.log(error))
 
 
-app.use("/products", productrouter);
-app.use("/carts", cartrouter);
-app.use("/payment", paymentrouter);
-
-app.listen(PORT,()=>{
-  console.log(`server is running on ${PORT}`)  
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>{
+    console.log(`Server started runnning on the port ${PORT}`);
 })
